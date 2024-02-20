@@ -1,25 +1,42 @@
 package captchaservice.Service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import captchaservice.Dto.CaptchaResponse;
 
 @Service
 public class CaptchaService {
 
     @Autowired
     private RestTemplate restTemplate;
+    @Value("${captcha_key}")
+    private String captchaKey;
 
-    public boolean verificarCaptcha(String token) {
-        String url = "URL_DEL_SERVIDOR_DE_VERIFICACION_DE_CAPTCHA" + token; // Reemplaza con la URL adecuada
-        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-        // Analizar la respuesta para verificar el captcha
-        // Por ejemplo, puedes verificar el cuerpo de la respuesta
-        if (response.getBody() != null && response.getBody().contains("captcha_valido")) {
-            return true;
-        } else {
-            return false;
-        }
+    public CaptchaResponse verificarCaptcha(String solution) {
+        String url = "https://api.friendlycaptcha.com/api/v1/siteverify"; // Reemplaza con la URL adecuada
+        
+        // Configurar los parámetros de la solicitud
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        // Crear el cuerpo de la solicitud
+        String requestBody = "{\"solution\": \"" + solution + "\", \"secret\": \"" + captchaKey + "\"}";
+
+        // Crear la entidad HTTP con los encabezados y el cuerpo
+        HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
+
+        // Realizar la solicitud POST y obtener la respuesta
+        ResponseEntity<CaptchaResponse> responseEntity = restTemplate.postForEntity(url, requestEntity, CaptchaResponse.class);
+
+        // Devolver la respuesta
+        return responseEntity.getBody();
+
     }
 }

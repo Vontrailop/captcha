@@ -1,30 +1,27 @@
 <template>
-  <form>
-    <form @submit.prevent="submitForm">
-      <label for="name">Nombre:</label><br />
-      <input
-        type="text"
-        id="name"
-        v-model="formData.name"
-        required
-      /><br /><br />
+  <form @submit.prevent="submitForm">
+    <label for="name"> Nombre:</label><br />
+    <input type="text" id="name" v-model="formData.name" required /><br /><br />
 
-      <div
-        ref="container"
-        class="frc-captcha"
-        data-sitekey="FCMHO851KQSSP9E3"
-        data-lang="es"
-      ></div>
-      <!-- Botón de envío -->
-      <button type="submit">Enviar</button>
-    </form>
+    <div
+      ref="container"
+      class="frc-captcha"
+      data-sitekey="FCMHO851KQSSP9E3"
+      data-lang="es"
+    ></div>
+
+    <!-- Botón de envío -->
+    <button type="submit">Enviar</button>
   </form>
 </template>
 
 
 <script>
 import { WidgetInstance } from "friendly-challenge";
+
 import { ref } from "vue";
+
+import axios from "axios";
 
 export default {
   data() {
@@ -39,12 +36,21 @@ export default {
   },
 
   methods: {
-    submitForm() {
-
+    //No comunicamos hacia
+    //el back de nuestra aplicación.
+    submitForm(){},
+    async verifyCaptcha (solution)  {
+      try {
+        const response = await axios.post("http://localhost:8080/api/verificar-captcha", {
+          solution,
+        });
+        this.respuestaCaptcha = response.data;
+      } catch (error) {
+        console.error("Error al verificar el captcha:", error);
+      }
     },
-    doneCallback: (solution) => {
-      console.log("Captcha was solved. The form can be submitted.");
-      console.log(solution);
+    doneCallback (solution)  {
+      this.verifyCaptcha(solution);
     },
 
     errorCallback: (err) => {
@@ -54,12 +60,11 @@ export default {
   },
 
   mounted() {
-    
     if (this.$refs.container) {
       this.widget = new WidgetInstance(this.$refs.container, {
-        // startMode: "auto",
-        doneCallback:this.doneCallback,
-        errorCallback:this.errorCallback,
+        //startMode: "auto",
+        doneCallback: this.doneCallback,
+        errorCallback: this.errorCallback,
       });
     }
   },

@@ -1,57 +1,74 @@
 <template>
-  <div>
-    <h2>Inicio de Sesión</h2>
-    <form @submit.prevent="login">
-      <div>
-        <label for="username">Usuario:</label>
-        <input type="text" id="username" v-model="username" required />
-      </div>
-      <div>
-        <label for="password">Contraseña:</label>
-        <input type="password" id="password" v-model="password" required />
-      </div>
-      <button type="submit">Iniciar Sesión</button>
+  <form>
+    <form @submit.prevent="submitForm">
+      <label for="name">Nombre:</label><br />
+      <input
+        type="text"
+        id="name"
+        v-model="formData.name"
+        required
+      /><br /><br />
 
-      <div class="frc-captcha" data-sitekey="FCMHO851KQSSP9E3" data-start="auto" :data-callback="myCallBack()"/>
+      <div
+        ref="container"
+        class="frc-captcha"
+        data-sitekey="FCMHO851KQSSP9E3"
+        data-lang="es"
+      ></div>
+      <!-- Botón de envío -->
+      <button type="submit">Enviar</button>
     </form>
-    <div v-if="errorMessage" style="color: red">{{ errorMessage }}</div>
-    <div v-if="loggedIn" style="color: green">
-      ¡Has iniciado sesión con éxito!
-    </div>
-  </div>
+  </form>
 </template>
 
+
 <script>
-import "friendly-challenge/widget";
+import { WidgetInstance } from "friendly-challenge";
+import { ref } from "vue";
+
 export default {
   data() {
     return {
-      username: "",
-      password: "",
-      errorMessage: "",
-      loggedIn: false,
+      container: ref("container"),
+      widget: ref(),
+      formData: {
+        name: "",
+        captchaToken: null, // token generado por FriendlyCaptcha
+      },
     };
   },
+
   methods: {
-    myCallBack(solution){
-      console.log("Captcha was finished with solution:" +solution);
+    submitForm() {
+
     },
-    login() {
-      // Aquí puedes agregar lógica para enviar los datos del formulario al servidor para autenticación
-      // En este ejemplo, simplemente comprobamos si los campos no están vacíos
-      if (this.username && this.password) {
-        // Aquí podrías enviar los datos al servidor para autenticación
-        // En un escenario real, puedes usar Axios o Fetch API para hacer una solicitud HTTP
-        // Por simplicidad, aquí simplemente simulamos una autenticación exitosa después de 1 segundo
-        setTimeout(() => {
-          this.loggedIn = true;
-        }, 1000);
-      } else {
-        this.errorMessage = "Por favor ingresa un usuario y una contraseña.";
-      }
+    doneCallback: (solution) => {
+      console.log("Captcha was solved. The form can be submitted.");
+      console.log(solution);
+    },
+
+    errorCallback: (err) => {
+      console.log("There was an error when trying to solve the Captcha.");
+      console.log(err);
     },
   },
-  mounted() {},
+
+  mounted() {
+    
+    if (this.$refs.container) {
+      this.widget = new WidgetInstance(this.$refs.container, {
+        // startMode: "auto",
+        doneCallback:this.doneCallback,
+        errorCallback:this.errorCallback,
+      });
+    }
+  },
+
+  beforeDestroy() {
+    if (this.widget) {
+      this.widget.destroy();
+    }
+  },
 };
 </script>
 

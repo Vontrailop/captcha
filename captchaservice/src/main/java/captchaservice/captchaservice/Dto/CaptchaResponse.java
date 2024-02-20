@@ -1,4 +1,4 @@
-package captchaservice.Dto;
+package captchaservice.captchaservice.Dto;
 
 import java.util.List;
 

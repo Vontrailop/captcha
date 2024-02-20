@@ -1,4 +1,6 @@
-package captchaservice.Service;
+package captchaservice.captchaservice.Service;
+
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import captchaservice.Dto.CaptchaResponse;
+import captchaservice.captchaservice.Dto.CaptchaResponse;
 
 @Service
 public class CaptchaService {

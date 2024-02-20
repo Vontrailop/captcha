@@ -1,4 +1,4 @@
-package captchaservice.controller;
+package captchaservice.captchaservice.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import captchaservice.Dto.CaptchaResponse;
-import captchaservice.Service.CaptchaService;
+import captchaservice.captchaservice.Dto.CaptchaResponse;
+import captchaservice.captchaservice.Service.CaptchaService;
 
 @RestController
 @CrossOrigin(origins = "*", methods = { RequestMethod.POST })

@@ -38,18 +38,22 @@ export default {
   methods: {
     //No comunicamos hacia
     //el back de nuestra aplicación.
-    submitForm(){},
-    async verifyCaptcha (solution)  {
+    submitForm() {},
+    async verifyCaptcha(solution) {
       try {
-        const response = await axios.post("http://localhost:8080/api/verificar-captcha", {
-          solution,
-        });
+        axios.defaults.headers.common["Access-Control-Request-Method"] = "*";
+        const response = await axios.post(
+          "http://localhost:8080/api/verificar-captcha",
+          {
+            solution,
+          }
+        );
         this.respuestaCaptcha = response.data;
       } catch (error) {
         console.error("Error al verificar el captcha:", error);
       }
     },
-    doneCallback (solution)  {
+    doneCallback(solution) {
       this.verifyCaptcha(solution);
     },
 

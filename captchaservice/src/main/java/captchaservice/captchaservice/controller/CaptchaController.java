@@ -13,15 +13,20 @@ import captchaservice.captchaservice.Dto.CaptchaResponse;
 import captchaservice.captchaservice.Service.CaptchaService;
 
 @RestController
-@CrossOrigin(origins = "*", methods = { RequestMethod.POST })
-@RequestMapping("/api")
+@CrossOrigin(
+    origins = "*", 
+    methods = 
+    { RequestMethod.POST, RequestMethod.OPTIONS})
+@RequestMapping("/api/captcha")
 public class CaptchaController {
 
     @Autowired
     private CaptchaService captchaService;
 
     @PostMapping("/verificar-captcha")
-    public CaptchaResponse verificarCaptcha(@RequestParam("solution") String solution) {
-        return captchaService.verificarCaptcha(solution);
+    public CaptchaResponse verificarCaptcha(
+        @RequestParam("solution") String solution) {
+        return captchaService.
+        verificarCaptcha(solution);
     }
 }

@@ -1,12 +1,14 @@
 <template>
   <form @submit.prevent="submitForm">
     <label for="name"> Nombre:</label><br />
-    <input type="text" id="name" v-model="formData.name" required /><br /><br />
+    <input type="text" id="name" 
+    v-model="formData.name" required />
+    <br/><br/>
 
     <div
       ref="container"
       class="frc-captcha"
-      data-sitekey="FCMHO851KQSSP9E3"
+      data-sitekey="FCMHO851KOUGPVCM"
       data-lang="es"
     ></div>
 
@@ -21,16 +23,15 @@ import { WidgetInstance } from "friendly-challenge";
 
 import { ref } from "vue";
 
-import axios from "axios";
+import CaptchaService from '../src/services/captchaService';
 
 export default {
   data() {
     return {
-      container: ref("container"),
+      container: ref(),
       widget: ref(),
       formData: {
-        name: "",
-        captchaToken: null, // token generado por FriendlyCaptcha
+        name: ""
       },
     };
   },
@@ -38,20 +39,12 @@ export default {
   methods: {
     //No comunicamos hacia
     //el back de nuestra aplicación.
+    
     submitForm() {},
+    
     async verifyCaptcha(solution) {
-      try {
-        axios.defaults.headers.common["Access-Control-Request-Method"] = "*";
-        const response = await axios.post(
-          "http://localhost:8080/api/verificar-captcha",
-          {
-            solution,
-          }
-        );
-        this.respuestaCaptcha = response.data;
-      } catch (error) {
-        console.error("Error al verificar el captcha:", error);
-      }
+      let response = await CaptchaService.verificarCaptcha(solution);
+      console.log(response);
     },
     doneCallback(solution) {
       this.verifyCaptcha(solution);
@@ -65,11 +58,13 @@ export default {
 
   mounted() {
     if (this.$refs.container) {
-      this.widget = new WidgetInstance(this.$refs.container, {
-        //startMode: "auto",
-        doneCallback: this.doneCallback,
-        errorCallback: this.errorCallback,
-      });
+      this.widget = new WidgetInstance(
+        this.$refs.container, {
+          startMode: "",
+          doneCallback: this.doneCallback,
+          errorCallback: this.errorCallback,
+        }
+      );
     }
   },
 

@@ -1,6 +1,7 @@
 package captchaservice.captchaservice.Service;
 
-
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,30 +16,31 @@ import captchaservice.captchaservice.Dto.CaptchaResponse;
 
 @Service
 public class CaptchaService {
-
     @Autowired
     private RestTemplate restTemplate;
-    @Value("${captcha_key}")
+    @Value("${FRIENDLYCAPTCHA.CAPTCHAKEY}")
     private String captchaKey;
+    @Value("${FRIENDLYCAPTCHA.SITEKEY}")
+    private String siteKey;
 
     public CaptchaResponse verificarCaptcha(String solution) {
-        String url = "https://api.friendlycaptcha.com/api/v1/siteverify"; // Reemplaza con la URL adecuada
-        
-        // Configurar los parámetros de la solicitud
+        String url = "https://api.friendlycaptcha.com/api/v1/siteverify";
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-
         // Crear el cuerpo de la solicitud
-        String requestBody = "{\"solution\": \"" + solution + "\", \"secret\": \"" + captchaKey + "\"}";
+        Map<String, String> requestBody = new HashMap<>();
+        requestBody.put("solution", solution);
+        requestBody.put("secret", captchaKey);
+        requestBody.put("sitekey", siteKey);
 
-        // Crear la entidad HTTP con los encabezados y el cuerpo
-        HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
+        HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(requestBody, headers);
 
-        // Realizar la solicitud POST y obtener la respuesta
-        ResponseEntity<CaptchaResponse> responseEntity = restTemplate.postForEntity(url, requestEntity, CaptchaResponse.class);
-
-        // Devolver la respuesta
+        ResponseEntity<CaptchaResponse> responseEntity = 
+        restTemplate.postForEntity(
+            url, 
+            requestEntity,
+            CaptchaResponse.class);
         return responseEntity.getBody();
-
     }
 }
